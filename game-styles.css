@@ -1,0 +1,400 @@
+/* ========================================
+   LUMEA ESSENCE - UNDER CONSTRUCTION PAGE
+   Geometry Dash Style Mini Game
+   ======================================== */
+
+/* ========== RESET & BASE STYLES ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #FED3EE 0%, #FFF0F7 50%, #F5E8F2 100%);
+    color: #4a4a4a;
+}
+
+/* ========== GAME WRAPPER ========== */
+.game-wrapper {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+}
+
+/* ========== BACK TO HOME BUTTON ========== */
+.back-home-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    padding: 12px 24px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid rgba(145, 63, 77, 0.3);
+    border-radius: 12px;
+    color: #913F4D;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.back-home-btn:hover {
+    background: rgba(145, 63, 77, 0.1);
+    border-color: rgba(145, 63, 77, 0.6);
+    transform: translateX(-5px);
+    box-shadow: 0 6px 20px rgba(145, 63, 77, 0.2);
+}
+
+/* ========== GAME HEADER ========== */
+.game-header {
+    text-align: center;
+    margin-bottom: 20px;
+    animation: fadeInDown 0.8s ease;
+}
+
+.game-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #913F4D 0%, #C1556B 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    font-size: 1rem;
+    color: #6b6b6b;
+    font-weight: 300;
+}
+
+/* ========== SCORE CONTAINER ========== */
+.score-container {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 15px;
+    animation: fadeInDown 0.8s ease 0.2s both;
+}
+
+.score, .high-score {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #913F4D;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(145, 63, 77, 0.2);
+}
+
+.score span, .high-score span {
+    font-size: 1.2rem;
+    color: #913F4D;
+}
+
+/* ========== GAME CONTAINER ========== */
+.game-container {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    height: 500px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(145, 63, 77, 0.2);
+    overflow: hidden;
+    border: 3px solid rgba(145, 63, 77, 0.3);
+    animation: fadeInUp 0.8s ease 0.3s both;
+}
+
+#gameCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+/* ========== START SCREEN ========== */
+.start-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(254, 211, 238, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+}
+
+.start-content {
+    text-align: center;
+    padding: 40px;
+}
+
+.start-content h2 {
+    font-size: 3rem;
+    color: #913F4D;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.start-content p {
+    font-size: 1.2rem;
+    color: #6b6b6b;
+    margin-bottom: 10px;
+}
+
+.instruction {
+    font-size: 0.95rem !important;
+    color: #a0a0a0;
+    margin-bottom: 30px !important;
+}
+
+/* ========== GAME OVER SCREEN ========== */
+.game-over-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(145, 63, 77, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+}
+
+.game-over-screen.hidden {
+    display: none;
+}
+
+.game-over-content {
+    text-align: center;
+    padding: 40px;
+    color: white;
+}
+
+.game-over-content h2 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    font-weight: 700;
+    animation: shake 0.5s ease;
+}
+
+.final-score, .best-score {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+}
+
+.final-score span, .best-score span {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #FED3EE;
+}
+
+/* ========== GAME BUTTONS ========== */
+.game-btn {
+    padding: 15px 40px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, #913F4D 0%, #C1556B 100%);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    margin: 10px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.game-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(145, 63, 77, 0.4);
+}
+
+.game-btn:active {
+    transform: translateY(-1px);
+}
+
+.secondary-btn {
+    background: linear-gradient(135deg, #FED3EE 0%, #FFC4E1 100%);
+    color: #913F4D;
+}
+
+.secondary-btn:hover {
+    box-shadow: 0 8px 25px rgba(254, 211, 238, 0.4);
+}
+
+/* ========== MOBILE INSTRUCTIONS ========== */
+.mobile-instructions {
+    text-align: center;
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    max-width: 900px;
+    width: 100%;
+    animation: fadeInUp 0.8s ease 0.4s both;
+}
+
+.mobile-instructions p {
+    font-size: 0.9rem;
+    color: #6b6b6b;
+    line-height: 1.6;
+}
+
+/* ========== FOOTER ========== */
+.game-footer {
+    position: fixed;
+    bottom: 10px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #a0a0a0;
+}
+
+/* ========== ANIMATIONS ========== */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+@media (max-width: 768px) {
+    .game-header h1 {
+        font-size: 2rem;
+    }
+    
+    .subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .score-container {
+        gap: 15px;
+    }
+    
+    .score, .high-score {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+    
+    .score span, .high-score span {
+        font-size: 1rem;
+    }
+    
+    .game-container {
+        height: 400px;
+        max-width: 100%;
+    }
+    
+    .start-content h2,
+    .game-over-content h2 {
+        font-size: 2rem;
+    }
+    
+    .start-content p {
+        font-size: 1rem;
+    }
+    
+    .game-btn {
+        padding: 12px 30px;
+        font-size: 1rem;
+    }
+    
+    .back-home-btn {
+        top: 10px;
+        left: 10px;
+        padding: 10px 20px;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-wrapper {
+        padding: 10px;
+    }
+    
+    .game-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .subtitle {
+        font-size: 0.8rem;
+    }
+    
+    .score-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .game-container {
+        height: 350px;
+        border-radius: 15px;
+    }
+    
+    .start-content h2,
+    .game-over-content h2 {
+        font-size: 1.8rem;
+    }
+    
+    .mobile-instructions p {
+        font-size: 0.8rem;
+    }
+    
+    .back-home-btn {
+        padding: 8px 16px;
+        font-size: 0.8rem;
+    }
+}
+
+/* ========== ACCESSIBILITY ========== */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+.game-btn:focus,
+.back-home-btn:focus {
+    outline: 3px solid #913F4D;
+    outline-offset: 2px;
+}
