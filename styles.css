@@ -667,7 +667,7 @@ body::after {
 .newsletter-form label {
     display: block;
     color: #4a4a4a;
-    font-weight: 500;
+    font-weight: 400;
     margin-bottom: 8px;
     font-size: 0.95rem;
 }
@@ -730,7 +730,7 @@ body::after {
     border: none;
     border-radius: 12px;
     font-size: 1.05rem;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: 'Poppins', sans-serif;
