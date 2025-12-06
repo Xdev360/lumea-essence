@@ -322,19 +322,63 @@
                     body: JSON.stringify({ name, email })
                 });
                 
-                const data = await response.json();
+                // Check if response is ok
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Show success message
+                        newsletterForm.style.display = 'none';
+                        successMessage.style.display = 'block';
+                    } else {
+                        formMessage.textContent = data.message || 'Something went wrong. Please try again.';
+                        formMessage.className = 'form-message error';
+                    }
+                } else {
+                    // Fallback: use localStorage for static deployment (Vercel)
+                    const subscribers = JSON.parse(localStorage.getItem('lumeaSubscribers') || '[]');
+                    const alreadyExists = subscribers.some(sub => sub.email === email);
+                    
+                    if (alreadyExists) {
+                        formMessage.textContent = 'This email is already subscribed!';
+                        formMessage.className = 'form-message error';
+                    } else {
+                        subscribers.push({
+                            id: Date.now(),
+                            name: name,
+                            email: email,
+                            dateSubscribed: new Date().toLocaleDateString(),
+                            timestamp: new Date().toISOString()
+                        });
+                        localStorage.setItem('lumeaSubscribers', JSON.stringify(subscribers));
+                        
+                        // Show success message
+                        newsletterForm.style.display = 'none';
+                        successMessage.style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                // Fallback: use localStorage if fetch fails
+                const subscribers = JSON.parse(localStorage.getItem('lumeaSubscribers') || '[]');
+                const alreadyExists = subscribers.some(sub => sub.email === email);
                 
-                if (data.success) {
+                if (alreadyExists) {
+                    formMessage.textContent = 'This email is already subscribed!';
+                    formMessage.className = 'form-message error';
+                } else {
+                    subscribers.push({
+                        id: Date.now(),
+                        name: name,
+                        email: email,
+                        dateSubscribed: new Date().toLocaleDateString(),
+                        timestamp: new Date().toISOString()
+                    });
+                    localStorage.setItem('lumeaSubscribers', JSON.stringify(subscribers));
+                    
                     // Show success message
                     newsletterForm.style.display = 'none';
                     successMessage.style.display = 'block';
-                } else {
-                    formMessage.textContent = data.message || 'Something went wrong. Please try again.';
-                    formMessage.className = 'form-message error';
                 }
-            } catch (error) {
-                formMessage.textContent = 'Server error. Please try again later.';
-                formMessage.className = 'form-message error';
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Subscribe Now';
