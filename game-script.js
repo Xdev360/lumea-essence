@@ -28,7 +28,7 @@ let frameCount = 0;
 let logoImage = new Image();
 
 // Load brand logo
-logoImage.src = 'assets/images/lumèa Essence logo1.png';
+logoImage.src = 'assets/images/lumea-essence-logo.png';
 
 // Player object
 let player = {
