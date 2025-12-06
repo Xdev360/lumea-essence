@@ -49,20 +49,8 @@
             <!-- Logo/Avatar -->
             <div class="logo-wrapper">
                 <div class="logo">
-                    <!-- Placeholder for brand logo -->
-                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#913F4D;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#FED3EE;stop-opacity:1" />
-                            </linearGradient>
-                        </defs>
-                        <circle cx="50" cy="50" r="48" fill="url(#logoGradient)"/>
-                        <circle cx="50" cy="50" r="40" fill="#fff" opacity="0.1"/>
-                        <path d="M50 30 Q65 40 60 55 Q50 65 35 55 Q30 40 50 30" fill="#fff" opacity="0.8"/>
-                        <circle cx="40" cy="45" r="3" fill="#913F4D"/>
-                        <circle cx="60" cy="45" r="3" fill="#913F4D"/>
-                    </svg>
+                    <!-- Brand Logo -->
+                    <img src="assets/images/lumèa Essence logo1.png" alt="Lumea Essence Logo" class="brand-logo-img">
                 </div>
             </div>
             
@@ -142,7 +130,7 @@
                 </a>
                 
                 <!-- Newsletter Signup -->
-                <a href="https://newsletter.yoursite.com" target="_blank" rel="noopener noreferrer" class="link-button newsletter-btn">
+                <button class="link-button newsletter-btn" id="newsletterBtn">
                     <span class="icon-wrapper">
                         <i class="fas fa-envelope"></i>
                     </span>
@@ -150,7 +138,7 @@
                         <span class="button-label">Join Our Newsletter</span>
                         <span class="button-subtext">Get exclusive deals & skincare advice</span>
                     </span>
-                </a>
+                </button>
                 
             </section>
         </main>
@@ -162,8 +150,72 @@
         
     </div>
     
-    <!-- ========== OPTIONAL: Smooth scroll behavior ========== -->
+    <!-- ========== NEWSLETTER MODAL ========== -->
+    <div class="newsletter-modal" id="newsletterModal">
+        <div class="modal-overlay" onclick="closeNewsletterModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeNewsletterModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <i class="fas fa-envelope-open-text"></i>
+                </div>
+                <h2>Join Our Newsletter</h2>
+                <p>Get exclusive skincare tips, deals, and product updates delivered to your inbox!</p>
+            </div>
+            
+            <form id="newsletterForm" class="newsletter-form">
+                <div class="form-group">
+                    <label for="subscriberName">
+                        <i class="fas fa-user"></i> Full Name
+                    </label>
+                    <input type="text" id="subscriberName" placeholder="Enter your full name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="subscriberEmail">
+                        <i class="fas fa-envelope"></i> Gmail Address
+                    </label>
+                    <input type="email" id="subscriberEmail" placeholder="youremail@gmail.com" required>
+                    <small>We only accept Gmail addresses</small>
+                </div>
+                
+                <div class="form-message" id="formMessage"></div>
+                
+                <button type="submit" class="modal-btn" id="submitBtn">
+                    <i class="fas fa-paper-plane"></i> Subscribe Now
+                </button>
+            </form>
+            
+            <div class="success-message" id="successMessage" style="display: none;">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3>Thank You for Subscribing!</h3>
+                <p>We've added you to our newsletter. Get ready for exclusive skincare tips and deals! ✨</p>
+                <button class="modal-btn" onclick="closeNewsletterModal()">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== PRELOADER ========== -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-content">
+            <div class="preloader-logo">
+                <img src="assets/images/lumèa Essence logo1.png" alt="Lumea Essence" class="preloader-logo-img">
+            </div>
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Loading...</p>
+        </div>
+    </div>
+
+    <!-- ========== SCRIPTS ========== -->
     <script>
+        // Smooth scroll behavior
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -174,6 +226,126 @@
                     });
                 }
             });
+        });
+
+        // Preloader for external links and page navigation
+        const preloader = document.getElementById('preloader');
+        const allLinks = document.querySelectorAll('a[href]:not([href^="#"])');
+
+        allLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                const target = this.getAttribute('target');
+                
+                // Show preloader
+                preloader.classList.add('active');
+                
+                // If it's an external link (opens in new tab), show preloader briefly
+                if (target === '_blank') {
+                    setTimeout(() => {
+                        preloader.classList.remove('active');
+                    }, 800);
+                } else {
+                    // For internal navigation, prevent default and navigate after animation
+                    e.preventDefault();
+                    setTimeout(() => {
+                        window.location.href = href;
+                    }, 600);
+                }
+            });
+        });
+
+        // Hide preloader on page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                preloader.classList.remove('active');
+            }, 500);
+        });
+
+        // ========== NEWSLETTER MODAL FUNCTIONS ==========
+        const newsletterModal = document.getElementById('newsletterModal');
+        const newsletterForm = document.getElementById('newsletterForm');
+        const successMessage = document.getElementById('successMessage');
+        const formMessage = document.getElementById('formMessage');
+        const newsletterBtn = document.getElementById('newsletterBtn');
+
+        function openNewsletterModal(e) {
+            if (e) e.preventDefault();
+            console.log('openNewsletterModal called'); // Debug
+            console.log('Modal element:', newsletterModal); // Debug
+            newsletterModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Add click listener to newsletter button
+        if (newsletterBtn) {
+            newsletterBtn.addEventListener('click', openNewsletterModal);
+        }
+
+        function closeNewsletterModal() {
+            newsletterModal.classList.remove('active');
+            document.body.style.overflow = '';
+            // Reset form
+            newsletterForm.reset();
+            newsletterForm.style.display = 'block';
+            successMessage.style.display = 'none';
+            formMessage.textContent = '';
+            formMessage.className = 'form-message';
+        }
+
+        // Newsletter form submission
+        newsletterForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('subscriberName').value.trim();
+            const email = document.getElementById('subscriberEmail').value.trim();
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // Validate Gmail
+            if (!email.toLowerCase().endsWith('@gmail.com')) {
+                formMessage.textContent = 'Please enter a valid Gmail address';
+                formMessage.className = 'form-message error';
+                return;
+            }
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subscribing...';
+            formMessage.textContent = '';
+            
+            try {
+                const response = await fetch('/api/subscribe', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, email })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Show success message
+                    newsletterForm.style.display = 'none';
+                    successMessage.style.display = 'block';
+                } else {
+                    formMessage.textContent = data.message || 'Something went wrong. Please try again.';
+                    formMessage.className = 'form-message error';
+                }
+            } catch (error) {
+                formMessage.textContent = 'Server error. Please try again later.';
+                formMessage.className = 'form-message error';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Subscribe Now';
+            }
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && newsletterModal.classList.contains('active')) {
+                closeNewsletterModal();
+            }
         });
     </script>
 </body>

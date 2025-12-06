@@ -25,6 +25,10 @@ let gameState = 'start'; // 'start', 'playing', 'gameOver'
 let score = 0;
 let highScore = 0;
 let frameCount = 0;
+let logoImage = new Image();
+
+// Load brand logo
+logoImage.src = 'assets/images/lumèa Essence logo1.png';
 
 // Player object
 let player = {
@@ -215,38 +219,55 @@ function drawPlayer() {
     ctx.translate(player.x + player.width / 2, player.y + player.height / 2);
     ctx.rotate(player.rotation);
     
-    // Draw brand logo as player
-    // Outer circle gradient
-    const gradient = ctx.createLinearGradient(-25, -25, 25, 25);
-    gradient.addColorStop(0, '#913F4D');
-    gradient.addColorStop(1, '#FED3EE');
-    
-    ctx.fillStyle = gradient;
-    ctx.beginPath();
-    ctx.arc(0, 0, 24, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Inner circle
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-    ctx.beginPath();
-    ctx.arc(0, 0, 18, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Decorative shape (like the logo)
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-    ctx.beginPath();
-    ctx.moveTo(0, -10);
-    ctx.quadraticCurveTo(10, -5, 8, 5);
-    ctx.quadraticCurveTo(0, 12, -8, 5);
-    ctx.quadraticCurveTo(-10, -5, 0, -10);
-    ctx.fill();
-    
-    // Eyes
-    ctx.fillStyle = '#913F4D';
-    ctx.beginPath();
-    ctx.arc(-5, 0, 2, 0, Math.PI * 2);
-    ctx.arc(5, 0, 2, 0, Math.PI * 2);
-    ctx.fill();
+    // Draw brand logo as player if loaded, otherwise fallback to gradient circle
+    if (logoImage.complete && logoImage.naturalHeight !== 0) {
+        // Draw circular clipped logo
+        ctx.beginPath();
+        ctx.arc(0, 0, 25, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        
+        ctx.drawImage(logoImage, -25, -25, 50, 50);
+        
+        // Add border
+        ctx.beginPath();
+        ctx.arc(0, 0, 25, 0, Math.PI * 2);
+        ctx.strokeStyle = '#913F4D';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+    } else {
+        // Fallback: Draw gradient circle
+        const gradient = ctx.createLinearGradient(-25, -25, 25, 25);
+        gradient.addColorStop(0, '#913F4D');
+        gradient.addColorStop(1, '#FED3EE');
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(0, 0, 24, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Inner circle
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.beginPath();
+        ctx.arc(0, 0, 18, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Decorative shape (like the logo)
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.beginPath();
+        ctx.moveTo(0, -10);
+        ctx.quadraticCurveTo(10, -5, 8, 5);
+        ctx.quadraticCurveTo(0, 12, -8, 5);
+        ctx.quadraticCurveTo(-10, -5, 0, -10);
+        ctx.fill();
+        
+        // Eyes
+        ctx.fillStyle = '#913F4D';
+        ctx.beginPath();
+        ctx.arc(-5, 0, 2, 0, Math.PI * 2);
+        ctx.arc(5, 0, 2, 0, Math.PI * 2);
+        ctx.fill();
+    }
     
     ctx.restore();
 }
