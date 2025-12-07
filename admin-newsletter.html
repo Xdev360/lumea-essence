@@ -361,6 +361,10 @@
             e.preventDefault();
             const password = document.getElementById('adminPassword').value;
             const errorDiv = document.getElementById('loginError');
+            
+            console.log('Login attempt with password:', password);
+            console.log('Expected password:', CORRECT_PASSWORD);
+            console.log('Match:', password === CORRECT_PASSWORD);
 
             try {
                 const response = await fetch(`${API_URL}/api/admin/verify`, {
@@ -368,6 +372,8 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ password })
                 });
+
+                console.log('Response status:', response.status);
 
                 if (response.ok) {
                     const data = await response.json();
@@ -382,25 +388,31 @@
                         errorDiv.style.display = 'block';
                     }
                 } else {
+                    console.log('Using fallback authentication');
                     // Fallback: local authentication for static deployment
                     if (password === CORRECT_PASSWORD) {
+                        console.log('Password matches! Logging in...');
                         adminPassword = password;
                         document.getElementById('loginScreen').style.display = 'none';
                         document.getElementById('adminDashboard').classList.add('active');
                         loadSubscribers();
                     } else {
+                        console.log('Password does not match');
                         errorDiv.textContent = 'Invalid password. Please try again.';
                         errorDiv.style.display = 'block';
                     }
                 }
             } catch (error) {
+                console.log('Fetch error, using fallback:', error);
                 // Fallback: local authentication if fetch fails
                 if (password === CORRECT_PASSWORD) {
+                    console.log('Password matches! Logging in...');
                     adminPassword = password;
                     document.getElementById('loginScreen').style.display = 'none';
                     document.getElementById('adminDashboard').classList.add('active');
                     loadSubscribers();
                 } else {
+                    console.log('Password does not match');
                     errorDiv.textContent = 'Invalid password. Please try again.';
                     errorDiv.style.display = 'block';
                 }
