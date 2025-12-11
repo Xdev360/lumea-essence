@@ -3,6 +3,173 @@
    Geometry Dash Style Mini Game
    ======================================== */
 
+// ========== PRE-GAME NEWSLETTER LOGIC ==========
+const gameNewsletterModal = document.getElementById('gameNewsletterModal');
+const gameNewsletterForm = document.getElementById('gameNewsletterForm');
+const gameFormMessage = document.getElementById('gameFormMessage');
+let currentPlayer = null;
+
+// Check if player already signed up
+function checkExistingPlayer() {
+    const savedPlayer = localStorage.getItem('gamePlayer');
+    if (savedPlayer) {
+        currentPlayer = JSON.parse(savedPlayer);
+        return true;
+    }
+    return false;
+}
+
+// Show newsletter modal if player hasn't signed up
+function showGameNewsletterModal() {
+    if (!checkExistingPlayer()) {
+        gameNewsletterModal.classList.add('active');
+    }
+}
+
+// Handle game newsletter form submission
+gameNewsletterForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const tikTokUsername = document.getElementById('tikTokUsername').value.trim();
+    const email = document.getElementById('gameEmail').value.trim();
+    const submitBtn = document.getElementById('gameSubmitBtn');
+    
+    // Validate input
+    if (!tikTokUsername || !email) {
+        gameFormMessage.textContent = 'Please fill in all fields';
+        gameFormMessage.className = 'form-message error';
+        return;
+    }
+    
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    gameFormMessage.textContent = '';
+    
+    try {
+        // Try backend API first
+        const response = await fetch('/api/game/register-player', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tikTokUsername, email })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            currentPlayer = { tikTokUsername, email, id: data.playerId };
+        } else {
+            // Fallback: use localStorage
+            currentPlayer = { tikTokUsername, email, id: Date.now() };
+        }
+    } catch (error) {
+        // Fallback: use localStorage
+        currentPlayer = { tikTokUsername, email, id: Date.now() };
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('gamePlayer', JSON.stringify(currentPlayer));
+    
+    // Close modal
+    gameNewsletterModal.classList.remove('active');
+    gameNewsletterForm.reset();
+    
+    // Start the game
+    startGame();
+    
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="fas fa-play"></i> Play & Join Leaderboard';
+});
+
+// ========== LEADERBOARD LOGIC ==========
+async function loadLeaderboard() {
+    const leaderboardBody = document.getElementById('leaderboardBody');
+    
+    try {
+        // Try backend API first
+        const response = await fetch('/api/game/leaderboard');
+        if (response.ok) {
+            const data = await response.json();
+            displayLeaderboard(data.leaderboard || []);
+            return;
+        }
+    } catch (error) {
+        console.log('Backend not available, using localStorage');
+    }
+    
+    // Fallback: use localStorage
+    const scores = JSON.parse(localStorage.getItem('gameScores') || '[]');
+    displayLeaderboard(scores);
+}
+
+function displayLeaderboard(scores) {
+    const leaderboardBody = document.getElementById('leaderboardBody');
+    
+    if (!scores || scores.length === 0) {
+        leaderboardBody.innerHTML = '<tr class="no-data-row"><td colspan="4">No scores yet. Be the first to play!</td></tr>';
+        return;
+    }
+    
+    // Sort scores and get top 20
+    const topScores = scores.sort((a, b) => b.score - a.score).slice(0, 20);
+    
+    let html = '';
+    topScores.forEach((entry, index) => {
+        const date = new Date(entry.timestamp).toLocaleDateString();
+        html += `
+            <tr>
+                <td class="rank">${index + 1}</td>
+                <td class="username">@${entry.tikTokUsername}</td>
+                <td class="score">${entry.score}</td>
+                <td class="date">${date}</td>
+            </tr>
+        `;
+    });
+    
+    leaderboardBody.innerHTML = html;
+}
+
+// Submit score to leaderboard
+async function submitScore(tikTokUsername, score) {
+    try {
+        // Try backend API first
+        const response = await fetch('/api/game/submit-score', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tikTokUsername, score })
+        });
+        
+        if (response.ok) {
+            loadLeaderboard();
+            return;
+        }
+    } catch (error) {
+        console.log('Backend not available, using localStorage');
+    }
+    
+    // Fallback: use localStorage
+    let scores = JSON.parse(localStorage.getItem('gameScores') || '[]');
+    
+    // Find existing player or create new entry
+    const existingIndex = scores.findIndex(s => s.tikTokUsername === tikTokUsername);
+    
+    if (existingIndex >= 0) {
+        // Keep only highest score
+        if (score > scores[existingIndex].score) {
+            scores[existingIndex].score = score;
+            scores[existingIndex].timestamp = new Date().toISOString();
+        }
+    } else {
+        // Add new score
+        scores.push({
+            tikTokUsername,
+            score,
+            timestamp: new Date().toISOString()
+        });
+    }
+    
+    localStorage.setItem('gameScores', JSON.stringify(scores));
+    loadLeaderboard();
+}
+
 // ========== GAME CONFIGURATION ==========
 const CONFIG = {
     GRAVITY: 0.6,
@@ -67,6 +234,12 @@ function initGame() {
     // Load high score from localStorage
     highScore = parseInt(localStorage.getItem('lumeaHighScore')) || 0;
     highScoreDisplay.textContent = highScore;
+    
+    // Load leaderboard
+    loadLeaderboard();
+    
+    // Show newsletter modal if player hasn't signed up
+    showGameNewsletterModal();
     
     // Event listeners
     startBtn.addEventListener('click', startGame);
@@ -388,6 +561,11 @@ function gameOver() {
     // Show game over screen
     gameOverScreen.classList.remove('hidden');
     finalScoreDisplay.textContent = score;
+    
+    // Submit score to leaderboard if player is registered
+    if (currentPlayer) {
+        submitScore(currentPlayer.tikTokUsername, score);
+    }
     bestScoreDisplay.textContent = highScore;
 }
 

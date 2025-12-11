@@ -11,12 +11,52 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23FED3EE'/><circle cx='50' cy='50' r='35' fill='%23913F4D'/><circle cx='35' cy='35' r='8' fill='%23FED3EE'/></svg>">
     
     <link rel="stylesheet" href="game-styles.css">
 </head>
 <body>
+    <!-- ========== PRE-GAME NEWSLETTER SIGNUP MODAL ========== -->
+    <div class="newsletter-modal" id="gameNewsletterModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <h2>Join the Game Leaderboard!</h2>
+                <p>Sign up to submit your score and compete with others</p>
+            </div>
+            
+            <form id="gameNewsletterForm" class="game-form">
+                <div class="form-group">
+                    <label for="tikTokUsername">
+                        <i class="fab fa-tiktok"></i> TikTok Username
+                    </label>
+                    <input type="text" id="tikTokUsername" placeholder="@yourusername" required>
+                    <small>Your TikTok handle (without @)</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="gameEmail">
+                        <i class="fas fa-envelope"></i> Email Address
+                    </label>
+                    <input type="email" id="gameEmail" placeholder="your@email.com" required>
+                </div>
+                
+                <div class="form-message" id="gameFormMessage"></div>
+                
+                <button type="submit" class="game-btn" id="gameSubmitBtn">
+                    <i class="fas fa-play"></i> Play & Join Leaderboard
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- ========== GAME CONTAINER ========== -->
     <div class="game-wrapper">
         
@@ -64,6 +104,34 @@
         <!-- Instructions for Mobile -->
         <div class="mobile-instructions">
             <p>🎮 <strong>How to Play:</strong> Tap screen or press SPACE to jump • Avoid the spikes • Collect points!</p>
+        </div>
+
+        <!-- ========== LEADERBOARD SECTION ========== -->
+        <div class="leaderboard-section">
+            <div class="leaderboard-header">
+                <h2><i class="fas fa-crown"></i> Top Scores Leaderboard</h2>
+                <p>Best Lumea Jump players of all time</p>
+            </div>
+            
+            <div class="leaderboard-container">
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th class="rank">#</th>
+                            <th class="username">TikTok Username</th>
+                            <th class="score">Score</th>
+                            <th class="date">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardBody">
+                        <tr class="loading-row">
+                            <td colspan="4" style="text-align: center; padding: 30px;">
+                                <i class="fas fa-spinner fa-spin"></i> Loading leaderboard...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
         
         <!-- Footer -->
