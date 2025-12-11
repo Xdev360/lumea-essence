@@ -3,6 +3,9 @@
    Geometry Dash Style Mini Game
    ======================================== */
 
+// ========== API CONFIGURATION ==========
+const API_URL = window.GAME_API_BASE || 'http://localhost:3000';
+
 // ========== PRE-GAME NEWSLETTER LOGIC ==========
 const gameNewsletterModal = document.getElementById('gameNewsletterModal');
 const gameNewsletterForm = document.getElementById('gameNewsletterForm');
@@ -47,7 +50,7 @@ gameNewsletterForm.addEventListener('submit', async (e) => {
     
     try {
         // Try backend API first
-        const response = await fetch('/api/game/register-player', {
+        const response = await fetch(`${API_URL}/api/game/register-player`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ tikTokUsername, email })
@@ -85,18 +88,23 @@ async function loadLeaderboard() {
     
     try {
         // Try backend API first
-        const response = await fetch('/api/game/leaderboard');
+        console.log(`Loading leaderboard from ${API_URL}/api/game/leaderboard`);
+        const response = await fetch(`${API_URL}/api/game/leaderboard`);
         if (response.ok) {
             const data = await response.json();
+            console.log('Leaderboard data received:', data);
             displayLeaderboard(data.leaderboard || []);
             return;
+        } else {
+            console.log('API response not ok:', response.status);
         }
     } catch (error) {
-        console.log('Backend not available, using localStorage');
+        console.log('Backend not available, using localStorage:', error);
     }
     
     // Fallback: use localStorage
     const scores = JSON.parse(localStorage.getItem('gameScores') || '[]');
+    console.log('Using localStorage scores:', scores);
     displayLeaderboard(scores);
 }
 
@@ -114,10 +122,12 @@ function displayLeaderboard(scores) {
     let html = '';
     topScores.forEach((entry, index) => {
         const date = new Date(entry.timestamp).toLocaleDateString();
+        // Remove @ if it already exists in username
+        const username = entry.tikTokUsername.startsWith('@') ? entry.tikTokUsername : `@${entry.tikTokUsername}`;
         html += `
             <tr>
                 <td class="rank">${index + 1}</td>
-                <td class="username">@${entry.tikTokUsername}</td>
+                <td class="username">${username}</td>
                 <td class="score">${entry.score}</td>
                 <td class="date">${date}</td>
             </tr>
@@ -125,13 +135,14 @@ function displayLeaderboard(scores) {
     });
     
     leaderboardBody.innerHTML = html;
+    console.log(`Leaderboard updated with ${topScores.length} scores`);
 }
 
 // Submit score to leaderboard
 async function submitScore(tikTokUsername, score) {
     try {
         // Try backend API first
-        const response = await fetch('/api/game/submit-score', {
+        const response = await fetch(`${API_URL}/api/game/submit-score`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ tikTokUsername, score })
