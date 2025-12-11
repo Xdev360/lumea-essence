@@ -171,6 +171,9 @@ async function submitScore(tikTokUsername, score) {
 }
 
 // ========== GAME CONFIGURATION ==========
+// Optional: set window.GAME_API_BASE to point to a deployed backend
+const API_URL = window.GAME_API_BASE || window.location.origin;
+
 const CONFIG = {
     GRAVITY: 0.6,
     JUMP_FORCE: -12,
